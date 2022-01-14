@@ -1,2 +1,2 @@
 # graphical-course
-2 sections in total
+12 sections in total
