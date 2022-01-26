@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<script type="text/javascript" src="./common.js"></script>
+		<title>Document</title>
+	</head>
+	<body>
+		<canvas id="canvas"></canvas>
+		<script>
+			// 顶点着色器代码 
+			const vertexShaderSource = `
+	  // 设置浮点数精度
+	  precision mediump float;
+	  // 接受 js 传过来的坐标
+	  attribute vec2 a_Position;
+	  void main() {
+	    gl_Position = vec4(a_Position, 0, 1);
+	  }
+	`;
+			// 片元着色器代码
+			const fragmentShaderSource = `
+	  void main() {
+	    gl_FragColor = vec4(1, 0, 0, 1);
+	  }
+    `;
+
+			const {
+				gl,
+				program
+			} = createProgramFun(vertexShaderSource, fragmentShaderSource);
+
+			// 为什么不是8个顶点数据？
+			const points= [
+				-0.2, 0.2, // p1
+				-0.2, -0.2, // p2
+				0.2, -0.2, // p3
+				0.2, -0.2, // p4
+				0.2, 0.2, // p5
+				-0.2, 0.2 // p6
+			];
+			// const points = [
+			// 	-0.2, 0.2, // p1
+			// 	-0.2, -0.2, // p2
+			// 	0.2, -0.2, // p3
+			// 	0.2, 0.2, // p4
+			// ];
+
+			// // 根据 points 中的 index 设置索引
+			// const indices = [
+			// 	0, 1, 2, // 第一个三角形
+			// 	2, 3, 0 // 第二个三角形
+			// ];
+
+			// 创建 buffer
+			const buffer = gl.createBuffer();
+			// 绑定buffer为当前缓冲区
+			gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+			// 获取程序中的 a_Position 变量
+			const a_Position = gl.getAttribLocation(program, 'a_Position');
+			// 激活 a_Position
+			gl.enableVertexAttribArray(a_Position);
+			// 指定 a_Position 从 buffer 获取数据的方式
+			gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 0, 0);
+			// 给 buffer 灌数据
+			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(points), gl.STATIC_DRAW);
+
+			// // 创建索引 buffer
+			// const indicesBuffer = gl.createBuffer();
+			// // 绑定索引 buffer
+			// gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
+			// // 灌数据
+			// gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+
+			// 设置清空 canvas 画布的颜色
+			// gl.clearColor(1, 1, 1, 1);
+			// // 清空画布
+			// gl.clear(gl.COLOR_BUFFER_BIT);
+			// // 绘制
+			// gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
+			
+			// 设置清空 canvas 画布的颜色
+			gl.clearColor(1, 1, 1, 1);
+			// 清空画布
+			gl.clear(gl.COLOR_BUFFER_BIT);
+			// 绘制三角形
+			gl.drawArrays(gl.TRIANGLES, 0, points.length / 2);
+		</script>
+	</body>
+</html>
