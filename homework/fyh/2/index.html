@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>使用VBO绘制矩形</title>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script src="../util/init.js"></script>
+    <script>
+        function draw(){
+            const canvas=document.querySelector("#canvas");
+            const gl= canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        
+            if(gl){
+                gl.clearColor(0.0, 0.0, 0.0, 1.0);
+                gl.clearDepth(1.0);
+                gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+
+                const vertices=[
+                    0.5,0.5,0.0,
+                    0.5,-0.5,0.0,
+                    -0.5,-0.5,0.0,
+                    -0.5,-0.5,0.0,
+                    0.5,0.5,0.0,
+                    -0.5,0.5,0.0
+                ];
+
+            const vbo= createVBO(gl,vertices);
+            gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+
+            const FSIZE = vertices.BYTES_PER_ELEMENT;
+        
+            const VertexSource = `
+            attribute vec3 a_pos;
+            void main(){
+                gl_Position=vec4(a_pos,1.0);
+            }
+            `;
+
+            const FragmentSource = `
+            precision lowp float;
+            void main(){
+                gl_FragColor=vec4(1.0,0.5,0.2,1.0);
+            }
+            `;
+
+            const shaderProgram = initShaders(gl, VertexSource, FragmentSource);
+            
+            //--激活着色器程序(使用着色器程序 )
+            gl.useProgram(shaderProgram);
+
+
+            const vPosition=gl.getAttribLocation(shaderProgram,"a_pos");
+
+            if(vPosition<0){
+                console.log("无法获取变量存储的位置");
+                return;
+            }
+
+            gl.vertexAttribPointer(vPosition,3,gl.FLOAT,false,3 *FSIZE,0.0);
+            gl.enableVertexAttribArray(vPosition);
+            gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+            gl.drawArrays(gl.TRIANGLES, 0,6);
+            gl.bindBuffer(gl.ARRAY_BUFFER, null);
+            gl.flush();
+
+        }
+    }
+
+
+        window.onload=function(){
+            draw()               
+        }
+    </script>
+</body>
+</html>
