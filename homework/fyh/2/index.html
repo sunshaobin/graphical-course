@@ -30,7 +30,6 @@
                 ];
 
             const vbo= createVBO(gl,vertices);
-            gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
 
             const FSIZE = vertices.BYTES_PER_ELEMENT;
         
@@ -60,10 +59,10 @@
                 console.log("无法获取变量存储的位置");
                 return;
             }
-
+            gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
             gl.vertexAttribPointer(vPosition,3,gl.FLOAT,false,3 *FSIZE,0.0);
             gl.enableVertexAttribArray(vPosition);
-            gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+         
             gl.drawArrays(gl.TRIANGLES, 0,6);
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
             gl.flush();
